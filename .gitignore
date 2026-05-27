@@ -1,0 +1,8 @@
+node_modules/
+calorie-web/node_modules/
+dist/
+calorie-web/dist/
+.env
+.env.local
+.DS_Store
+.claude/

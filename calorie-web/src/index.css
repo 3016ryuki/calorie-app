@@ -1,0 +1,602 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  color: inherit;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ==== レイアウト ==== */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 720px;
+  margin: 0 auto;
+  background: #f3f4f6;
+}
+
+.app-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-bar {
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+
+.tab-bar button {
+  flex: 1;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.tab-bar button.active {
+  color: #3b82f6;
+}
+
+.tab-bar .tab-icon {
+  font-size: 22px;
+  opacity: 0.5;
+}
+
+.tab-bar button.active .tab-icon {
+  opacity: 1;
+}
+
+/* ==== カード ==== */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* ==== 日付ナビ ==== */
+.date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.date-nav button {
+  font-size: 28px;
+  color: #3b82f6;
+  padding: 0 24px;
+  font-weight: 300;
+}
+
+.date-nav .date-text {
+  font-size: 17px;
+  font-weight: 700;
+  min-width: 160px;
+  text-align: center;
+}
+
+/* ==== カロリー大表示 ==== */
+.kcal-row { display: flex; align-items: baseline; margin-bottom: 8px; }
+.kcal-num { font-size: 42px; font-weight: 800; }
+.kcal-unit { font-size: 15px; color: #6b7280; margin-left: 4px; }
+
+.kcal-track {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.kcal-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 5px;
+  transition: width 0.3s;
+}
+.kcal-fill.over { background: #ef4444; }
+
+.balance-row {
+  display: flex;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 8px;
+}
+.balance-cell { flex: 1; text-align: center; }
+.balance-label { font-size: 11px; color: #9ca3af; margin-bottom: 2px; }
+.balance-val { font-size: 20px; font-weight: 800; }
+
+/* ==== PFCバー ==== */
+.nutbar { margin-bottom: 10px; }
+.nutbar-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 600;
+}
+.nutbar-val { color: #111827; font-weight: normal; }
+.nutbar-val .target { color: #9ca3af; font-size: 11px; }
+.nutbar-val.over { color: #ef4444; }
+.nutbar-track {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.nutbar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* ==== ログアイテム ==== */
+.log-section { padding: 0 14px; margin-bottom: 14px; }
+
+.log-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.btn-add {
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-add.burn {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.log-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  cursor: pointer;
+}
+
+.log-left { flex: 1; }
+.log-name { font-size: 15px; font-weight: 600; }
+.log-meta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.log-pfc { display: flex; gap: 8px; margin-top: 4px; }
+.log-pfc-item { font-size: 11px; color: #6b7280; }
+
+.log-right { text-align: right; }
+.log-kcal { font-size: 22px; font-weight: 800; line-height: 1; }
+.log-kcal-unit { font-size: 11px; color: #9ca3af; }
+.log-delete {
+  margin-top: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+.empty-log {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.main-scroll { padding: 14px 14px 0; }
+
+/* ==== モーダル ==== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.modal-sub { font-size: 12px; color: #9ca3af; margin-bottom: 14px; }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.btn-modal {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-cancel { background: #f3f4f6; color: #6b7280; }
+.btn-confirm { background: #3b82f6; color: #fff; font-weight: 700; }
+.btn-confirm.burn { background: #f97316; }
+
+/* ==== フォーム ==== */
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.form-input:focus { border-color: #3b82f6; }
+
+.form-input-large {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.form-row { display: flex; gap: 8px; }
+.form-row > div { flex: 1; }
+
+.preview-card {
+  background: #f0f9ff;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 14px;
+  text-align: center;
+}
+.preview-kcal { font-size: 24px; font-weight: 800; color: #1d4ed8; }
+.preview-pfc { display: flex; justify-content: space-around; margin-top: 4px; font-size: 13px; color: #374151; }
+
+/* ==== 食材選択リスト ==== */
+.modal-full {
+  position: fixed;
+  inset: 0;
+  background: #f9fafb;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+.modal-full-header {
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+.modal-full-header h2 { font-size: 18px; }
+.btn-close { color: #3b82f6; font-size: 16px; font-weight: 600; }
+
+.search-bar {
+  padding: 12px;
+  background: #fff;
+}
+.search-bar input {
+  width: 100%;
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.category-tabs::-webkit-scrollbar { display: none; }
+.cat-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #f3f4f6;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.cat-tab.active { background: #3b82f6; color: #fff; font-weight: 700; }
+
+.food-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.food-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.food-item-left { flex: 1; }
+.food-item-name { font-size: 15px; font-weight: 600; }
+.food-item-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.food-item-pfc { display: flex; gap: 6px; }
+.food-item-pfc span {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* ==== 設定画面 ==== */
+.settings-section { padding: 16px; }
+.settings-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+.settings-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin-bottom: 16px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+.settings-row + .settings-row { border-top: 1px solid #f3f4f6; }
+.settings-label { flex: 1; }
+.settings-label-main { font-size: 15px; }
+.settings-label-sub { font-size: 12px; color: #9ca3af; }
+.settings-input {
+  width: 100px;
+  text-align: right;
+  border-bottom: 2px solid #3b82f6;
+  padding: 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.btn-save {
+  display: block;
+  width: 100%;
+  background: #3b82f6;
+  color: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.btn-reset {
+  display: block;
+  width: 100%;
+  background: #fff;
+  color: #ef4444;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+  margin-bottom: 16px;
+}
+
+.note {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.6;
+  padding: 0 8px;
+}
+
+/* ==== 食材マスター ==== */
+.foods-list-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+.preset-badge {
+  font-size: 10px;
+  color: #3b82f6;
+  background: #eff6ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+.btn-edit {
+  background: #f0f9ff;
+  color: #3b82f6;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.btn-del {
+  background: #fff1f2;
+  color: #ef4444;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ==== 統計画面 ==== */
+.period-tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 14px;
+}
+.period-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+}
+.period-tab.active { background: #3b82f6; color: #fff; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.summary-card {
+  padding: 14px;
+  border-radius: 12px;
+}
+.summary-label { font-size: 11px; color: #6b7280; font-weight: 600; }
+.summary-value { font-size: 26px; font-weight: 800; margin-top: 4px; }
+.summary-unit { font-size: 11px; color: #9ca3af; }
+
+.chart-legend {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #6b7280; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+.legend-line { width: 14px; height: 2px; }
+
+.preset-list { max-height: 200px; overflow-y: auto; }
+.preset-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+.preset-row-name { font-size: 13px; }
+.preset-row-kcal { font-size: 13px; color: #f97316; font-weight: 700; }
+
+.unit-type-row { display: flex; gap: 10px; }
+.unit-type-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 14px;
+}
+.unit-type-btn.active { background: #3b82f6; color: #fff; }
