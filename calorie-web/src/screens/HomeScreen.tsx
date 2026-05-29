@@ -113,7 +113,7 @@ export default function HomeScreen() {
         <div className="log-section-header">
           <span className="section-title">🍽 食事 ({logs.length})</span>
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn-add" style={{ background: '#8b5cf6' }} onClick={() => setShowMemoInput(true)}>✏️ AIメモ</button>
+            <button className="btn-add" style={{ background: '#e0f9ff', color: '#0891b2' }} onClick={() => setShowMemoInput(true)}>✏️ AIメモ</button>
             <button className="btn-add" onClick={() => setShowFoodSelect(true)}>＋ 追加</button>
           </div>
         </div>
