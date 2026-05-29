@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useStore } from '../store';
 import type { FoodMaster } from '../types';
 
-const CATEGORIES = ['肉類', '魚介・缶詰', '卵・大豆', 'プロテイン', '主食（米）', '主食（麺）', 'いも類', '油脂・その他', 'その他'];
+const CATEGORIES = ['すべて', '肉類', '魚介・缶詰', '卵・大豆', 'プロテイン', '主食（米）', '主食（麺）', 'いも類', '野菜', '油脂・その他', 'その他'];
+
+function pfcBg(protein: number, fat: number, carb: number): string {
+  if (protein >= fat && protein >= carb) return '#e0f2fe';
+  if (fat >= carb) return '#fff3e0';
+  return '#e8f5e9';
+}
 
 interface FormData {
   name: string;
@@ -53,7 +59,7 @@ function FoodFormModal({
 
         <div className="form-label">カテゴリ</div>
         <div className="category-tabs" style={{ padding: 0 }}>
-          {CATEGORIES.map(c => (
+          {CATEGORIES.filter(c => c !== 'すべて').map(c => (
             <button
               key={c}
               type="button"
@@ -129,10 +135,13 @@ function FoodFormModal({
 export default function FoodsScreen() {
   const { foods, addFood, updateFood, deleteFood } = useStore();
   const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('すべて');
   const [showForm, setShowForm] = useState(false);
   const [editTarget, setEditTarget] = useState<FoodMaster | undefined>();
 
-  const filtered = foods.filter(f => f.name.includes(search));
+  const filtered = useMemo(() => foods.filter(f =>
+    (category === 'すべて' || f.category === category) && f.name.includes(search)
+  ), [foods, search, category]);
 
   const handleSave = (form: FormData) => {
     const data = {
@@ -163,26 +172,41 @@ export default function FoodsScreen() {
         />
       </div>
 
-      <div style={{ padding: 12 }}>
+      <div className="category-tabs">
+        {CATEGORIES.map(c => (
+          <button
+            key={c}
+            className={`cat-tab ${category === c ? 'active' : ''}`}
+            onClick={() => setCategory(c)}
+          >{c}</button>
+        ))}
+      </div>
+
+      <div className="food-list">
         {filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>食材が見つかりません</div>
         )}
         {filtered.map(f => (
-          <div key={f.id} className="foods-list-item">
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div key={f.id} className="food-item" style={{ background: pfcBg(f.protein, f.fat, f.carb), cursor: 'default' }}>
+            <div className="food-item-left">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span className="food-item-name">{f.name}</span>
                 {f.is_preset === 1 && <span className="preset-badge">プリセット</span>}
               </div>
-              <div className="food-item-sub" style={{ marginTop: 4 }}>
-                {f.base_amount}{f.unit_name} → {f.kcal}kcal　P{f.protein}g F{f.fat}g C{f.carb}g
+              <div className="food-item-sub">{f.base_amount}{f.unit_name} = {f.kcal}kcal</div>
+              <div className="food-item-pfc" style={{ marginTop: 4 }}>
+                <span>P{f.protein}g</span>
+                <span>F{f.fat}g</span>
+                <span>C{f.carb}g</span>
               </div>
             </div>
-            <button className="btn-edit" onClick={() => { setEditTarget(f); setShowForm(true); }}>編集</button>
-            <button
-              className="btn-del"
-              onClick={() => { if (confirm(`「${f.name}」を削除しますか？`)) deleteFood(f.id); }}
-            >削除</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <button className="btn-edit" onClick={() => { setEditTarget(f); setShowForm(true); }}>編集</button>
+              <button
+                className="btn-del"
+                onClick={() => { if (confirm(`「${f.name}」を削除しますか？`)) deleteFood(f.id); }}
+              >削除</button>
+            </div>
           </div>
         ))}
       </div>

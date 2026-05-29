@@ -1,7 +1,13 @@
 import { useState, useMemo } from 'react';
 import type { FoodMaster } from '../types';
 
-const CATEGORIES = ['すべて', '肉類', '魚介・缶詰', '卵・大豆', 'プロテイン', '主食（米）', '主食（麺）', 'いも類', '油脂・その他', 'その他'];
+const CATEGORIES = ['すべて', '肉類', '魚介・缶詰', '卵・大豆', 'プロテイン', '主食（米）', '主食（麺）', 'いも類', '野菜', '油脂・その他', 'その他'];
+
+function pfcBg(protein: number, fat: number, carb: number): string {
+  if (protein >= fat && protein >= carb) return '#e0f2fe';
+  if (fat >= carb) return '#fff3e0';
+  return '#e8f5e9';
+}
 
 interface Props {
   foods: FoodMaster[];
@@ -17,10 +23,7 @@ export default function FoodSelectModal({ foods, onSelect, onClose }: Props) {
     (category === 'すべて' || f.category === category) && f.name.includes(search)
   ), [foods, search, category]);
 
-  const usedCategories = useMemo(() => {
-    const cats = new Set(foods.map(f => f.category));
-    return CATEGORIES.filter(c => c === 'すべて' || cats.has(c));
-  }, [foods]);
+  const usedCategories = CATEGORIES;
 
   return (
     <div className="modal-full">
@@ -53,7 +56,7 @@ export default function FoodSelectModal({ foods, onSelect, onClose }: Props) {
           <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>該当する食材がありません</div>
         )}
         {filtered.map(f => (
-          <div key={f.id} className="food-item" onClick={() => onSelect(f)}>
+          <div key={f.id} className="food-item" style={{ background: pfcBg(f.protein, f.fat, f.carb) }} onClick={() => onSelect(f)}>
             <div className="food-item-left">
               <div className="food-item-name">{f.name}</div>
               <div className="food-item-sub">{f.base_amount}{f.unit_name} = {f.kcal}kcal</div>
