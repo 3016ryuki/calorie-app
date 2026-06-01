@@ -38,12 +38,14 @@ interface State {
   updateLog: (id: number, amount: number) => void;
   deleteLog: (id: number) => void;
 
+  addQuickCalorie: (name: string, kcal: number) => void;
   addBurn: (name: string, kcal: number) => void;
   deleteBurn: (id: number) => void;
 
   saveSettings: (s: UserSettings) => void;
   saveApiSettings: (s: ApiSettings) => void;
   addLogsFromMemo: (items: ParsedFoodItem[]) => void;
+  syncFromSupabase: () => Promise<void>;
   resetAll: () => void;
 }
 
@@ -190,6 +192,30 @@ export const useStore = create<State>((set, get) => ({
     }
   },
 
+  addQuickCalorie: (name, kcal) => {
+    const { allLogs, selectedDate } = get();
+    const newLog: FoodLog = {
+      id: nextId(allLogs),
+      date: selectedDate,
+      logged_at: new Date().toISOString(),
+      food_id: 0,
+      food_name: name,
+      amount: 1,
+      unit_name: '',
+      kcal,
+      protein: 0,
+      fat: 0,
+      carb: 0,
+    };
+    const next = [...allLogs, newLog];
+    save('LOGS', next);
+    set({ allLogs: next });
+    const { supabase_url, supabase_anon_key } = get().apiSettings;
+    if (supabase_url && supabase_anon_key) {
+      upsertLogToSupabase(newLog, supabase_url, supabase_anon_key).catch(() => {});
+    }
+  },
+
   addBurn: (name, kcal) => {
     const { allBurns, selectedDate } = get();
     const newBurn: BurnLog = {
@@ -285,6 +311,24 @@ export const useStore = create<State>((set, get) => ({
     if (supabase_url && supabase_anon_key) {
       newLogs.forEach(l => upsertLogToSupabase(l, supabase_url, supabase_anon_key).catch(() => {}));
     }
+  },
+
+  syncFromSupabase: async () => {
+    const { supabase_url, supabase_anon_key } = get().apiSettings;
+    if (!supabase_url || !supabase_anon_key) throw new Error('Supabase が設定されていません');
+    const [remoteFoods, remoteLogs, remoteBurns] = await Promise.all([
+      fetchFoodsFromSupabase(supabase_url, supabase_anon_key),
+      fetchLogsFromSupabase(supabase_url, supabase_anon_key),
+      fetchBurnsFromSupabase(supabase_url, supabase_anon_key),
+    ]);
+    const state = get();
+    const localCustomIds = new Set(state.foods.filter(f => f.is_preset === 0).map(f => f.id));
+    const toAdd = remoteFoods.filter(f => !localCustomIds.has(f.id));
+    const mergedFoods = toAdd.length > 0 ? [...state.foods, ...toAdd] : state.foods;
+    if (toAdd.length > 0) save('FOODS', mergedFoods);
+    save('LOGS', remoteLogs);
+    save('BURNS', remoteBurns);
+    set({ foods: mergedFoods, allLogs: remoteLogs, allBurns: remoteBurns });
   },
 
   resetAll: () => {

@@ -4,6 +4,14 @@ import type { FoodMaster } from '../types';
 
 const CATEGORIES = ['すべて', '肉類', '魚介・缶詰', '卵・大豆', 'プロテイン', '主食（米）', '主食（麺）', 'いも類', '野菜', '油脂・その他', 'その他'];
 
+type SortKey = 'none' | 'protein' | 'fat' | 'carb';
+
+const SORT_BUTTONS: { key: SortKey; label: string; bg: string; color: string }[] = [
+  { key: 'protein', label: 'P 高い順', bg: '#e0f2fe', color: '#0891b2' },
+  { key: 'fat',     label: 'F 高い順', bg: '#fff3e0', color: '#d97706' },
+  { key: 'carb',    label: 'C 高い順', bg: '#e8f5e9', color: '#16a34a' },
+];
+
 function pfcBg(protein: number, fat: number, carb: number): string {
   if (protein >= fat && protein >= carb) return '#e0f2fe';
   if (fat >= carb) return '#fff3e0';
@@ -136,12 +144,17 @@ export default function FoodsScreen() {
   const { foods, addFood, updateFood, deleteFood } = useStore();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('すべて');
+  const [sortKey, setSortKey] = useState<SortKey>('none');
   const [showForm, setShowForm] = useState(false);
   const [editTarget, setEditTarget] = useState<FoodMaster | undefined>();
 
-  const filtered = useMemo(() => foods.filter(f =>
-    (category === 'すべて' || f.category === category) && f.name.includes(search)
-  ), [foods, search, category]);
+  const filtered = useMemo(() => {
+    const base = foods.filter(f =>
+      (category === 'すべて' || f.category === category) && f.name.includes(search)
+    );
+    if (sortKey === 'none') return base;
+    return [...base].sort((a, b) => b[sortKey] - a[sortKey]);
+  }, [foods, search, category, sortKey]);
 
   const handleSave = (form: FormData) => {
     const data = {
@@ -179,6 +192,21 @@ export default function FoodsScreen() {
             className={`cat-tab ${category === c ? 'active' : ''}`}
             onClick={() => setCategory(c)}
           >{c}</button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, padding: '8px 14px 0' }}>
+        {SORT_BUTTONS.map(s => (
+          <button
+            key={s.key}
+            onClick={() => setSortKey(sortKey === s.key ? 'none' : s.key)}
+            style={{
+              padding: '4px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700,
+              background: sortKey === s.key ? s.bg : '#f3f4f6',
+              color: sortKey === s.key ? s.color : '#9ca3af',
+              border: sortKey === s.key ? `1.5px solid ${s.color}` : '1.5px solid transparent',
+            }}
+          >{s.label}</button>
         ))}
       </div>
 

@@ -15,13 +15,26 @@ interface Props {
   onClose: () => void;
 }
 
+type SortKey = 'none' | 'protein' | 'fat' | 'carb';
+
+const SORT_BUTTONS: { key: SortKey; label: string; bg: string; color: string }[] = [
+  { key: 'protein', label: 'P 高い順', bg: '#e0f2fe', color: '#0891b2' },
+  { key: 'fat',     label: 'F 高い順', bg: '#fff3e0', color: '#d97706' },
+  { key: 'carb',    label: 'C 高い順', bg: '#e8f5e9', color: '#16a34a' },
+];
+
 export default function FoodSelectModal({ foods, onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('すべて');
+  const [sortKey, setSortKey] = useState<SortKey>('none');
 
-  const filtered = useMemo(() => foods.filter(f =>
-    (category === 'すべて' || f.category === category) && f.name.includes(search)
-  ), [foods, search, category]);
+  const filtered = useMemo(() => {
+    const base = foods.filter(f =>
+      (category === 'すべて' || f.category === category) && f.name.includes(search)
+    );
+    if (sortKey === 'none') return base;
+    return [...base].sort((a, b) => b[sortKey] - a[sortKey]);
+  }, [foods, search, category, sortKey]);
 
   const usedCategories = CATEGORIES;
 
@@ -48,6 +61,21 @@ export default function FoodSelectModal({ foods, onSelect, onClose }: Props) {
             className={`cat-tab ${category === c ? 'active' : ''}`}
             onClick={() => setCategory(c)}
           >{c}</button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, padding: '8px 14px 0' }}>
+        {SORT_BUTTONS.map(s => (
+          <button
+            key={s.key}
+            onClick={() => setSortKey(sortKey === s.key ? 'none' : s.key)}
+            style={{
+              padding: '4px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700,
+              background: sortKey === s.key ? s.bg : '#f3f4f6',
+              color: sortKey === s.key ? s.color : '#9ca3af',
+              border: sortKey === s.key ? `1.5px solid ${s.color}` : '1.5px solid transparent',
+            }}
+          >{s.label}</button>
         ))}
       </div>
 
