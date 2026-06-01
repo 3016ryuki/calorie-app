@@ -7,11 +7,12 @@ import AmountInputModal from '../components/AmountInputModal';
 import FoodSelectModal from '../components/FoodSelectModal';
 import BurnInputModal from '../components/BurnInputModal';
 import MemoInputModal from '../components/MemoInputModal';
+import QuickCalorieModal from '../components/QuickCalorieModal';
 
 export default function HomeScreen() {
   const {
     foods, allLogs, allBurns, settings, selectedDate,
-    setSelectedDate, addLog, updateLog, deleteLog, addBurn, deleteBurn,
+    setSelectedDate, addLog, updateLog, deleteLog, addBurn, deleteBurn, addQuickCalorie,
   } = useStore();
 
   const logs = useMemo(() =>
@@ -25,6 +26,7 @@ export default function HomeScreen() {
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [showBurnInput, setShowBurnInput] = useState(false);
   const [showMemoInput, setShowMemoInput] = useState(false);
+  const [showQuickCalorie, setShowQuickCalorie] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodMaster | null>(null);
   const [editingLog, setEditingLog] = useState<FoodLog | null>(null);
 
@@ -114,6 +116,8 @@ export default function HomeScreen() {
           <span className="section-title">🍽 食事 ({logs.length})</span>
           <div style={{ display: 'flex', gap: 6 }}>
             <button className="btn-add" style={{ background: '#e0f9ff', color: '#0891b2' }} onClick={() => setShowMemoInput(true)}>✏️ AIメモ</button>
+            <button className="btn-add" style={{ background: '#fef3c7', color: '#d97706' }} onClick={() => setShowQuickCalorie(true)}>🍺 飲み
+            </button>
             <button className="btn-add" onClick={() => setShowFoodSelect(true)}>＋ 追加</button>
           </div>
         </div>
@@ -203,6 +207,12 @@ export default function HomeScreen() {
       )}
       {showMemoInput && (
         <MemoInputModal onClose={() => setShowMemoInput(false)} />
+      )}
+      {showQuickCalorie && (
+        <QuickCalorieModal
+          onConfirm={(name, kcal) => { addQuickCalorie(name, kcal); setShowQuickCalorie(false); }}
+          onCancel={() => setShowQuickCalorie(false)}
+        />
       )}
     </>
   );

@@ -3,7 +3,7 @@ import { useStore } from '../store';
 import { testSupabaseConnection } from '../storage/supabase';
 
 export default function SettingsScreen() {
-  const { settings, saveSettings, resetAll, apiSettings, saveApiSettings } = useStore();
+  const { settings, saveSettings, resetAll, apiSettings, saveApiSettings, syncFromSupabase } = useStore();
   const [form, setForm] = useState({
     target_kcal: String(settings.target_kcal),
     target_protein: String(settings.target_protein),
@@ -18,6 +18,7 @@ export default function SettingsScreen() {
   });
   const [supabaseStatus, setSupabaseStatus] = useState<'idle' | 'testing' | 'ok' | 'error'>('idle');
   const [supabaseError, setSupabaseError] = useState('');
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     setForm({
@@ -177,6 +178,24 @@ export default function SettingsScreen() {
             disabled={supabaseStatus === 'testing'}
           >
             {supabaseStatus === 'testing' ? '接続中...' : '接続テスト'}
+          </button>
+          <button
+            className="btn-save"
+            style={{ flex: 1, marginBottom: 0, background: '#0891b2' }}
+            disabled={syncing || !apiSettings.supabase_url}
+            onClick={async () => {
+              setSyncing(true);
+              try {
+                await syncFromSupabase();
+                alert('同期が完了しました');
+              } catch (e) {
+                alert(`同期に失敗しました: ${String(e)}`);
+              } finally {
+                setSyncing(false);
+              }
+            }}
+          >
+            {syncing ? '同期中...' : 'データを同期'}
           </button>
         </div>
         {supabaseStatus === 'ok' && (
