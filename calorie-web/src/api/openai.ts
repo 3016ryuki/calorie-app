@@ -53,7 +53,8 @@ export async function parseFoodMemo(
 }
 
 - amount が不明な場合は一般的な1食分の量を使用する
-- kcal/protein/fat/carb が不明な場合は 0 を使用する${knownFoodsSection}`,
+- kcal/protein/fat/carb は必ず日本食品標準成分表または一般的な栄養データを参照して数値を入力する
+- 正確な値が不明な場合も類似食品から合理的に推定して返す。0 を返してよいのは水・お茶・無糖炭酸水など本当にカロリーがない食品のみ${knownFoodsSection}`,
         },
         { role: 'user', content: text },
       ],
