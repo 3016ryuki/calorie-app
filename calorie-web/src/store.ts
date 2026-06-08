@@ -38,7 +38,7 @@ interface State {
   updateLog: (id: number, amount: number) => void;
   deleteLog: (id: number) => void;
 
-  addQuickCalorie: (name: string, kcal: number) => void;
+  addQuickCalorie: (name: string, kcal: number, protein: number, fat: number, carb: number) => void;
   addBurn: (name: string, kcal: number) => void;
   deleteBurn: (id: number) => void;
 
@@ -192,7 +192,7 @@ export const useStore = create<State>((set, get) => ({
     }
   },
 
-  addQuickCalorie: (name, kcal) => {
+  addQuickCalorie: (name, kcal, protein, fat, carb) => {
     const { allLogs, selectedDate } = get();
     const newLog: FoodLog = {
       id: nextId(allLogs),
@@ -203,9 +203,9 @@ export const useStore = create<State>((set, get) => ({
       amount: 1,
       unit_name: '',
       kcal,
-      protein: 0,
-      fat: 0,
-      carb: 0,
+      protein,
+      fat,
+      carb,
     };
     const next = [...allLogs, newLog];
     save('LOGS', next);
