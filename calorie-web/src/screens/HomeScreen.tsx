@@ -116,8 +116,7 @@ export default function HomeScreen() {
           <span className="section-title">🍽 食事 ({logs.length})</span>
           <div style={{ display: 'flex', gap: 6 }}>
             <button className="btn-add" style={{ background: '#e0f9ff', color: '#0891b2' }} onClick={() => setShowMemoInput(true)}>✏️ AIメモ</button>
-            <button className="btn-add" style={{ background: '#fef3c7', color: '#d97706' }} onClick={() => setShowQuickCalorie(true)}>🍺 飲み
-            </button>
+            <button className="btn-add" style={{ background: '#fef3c7', color: '#d97706' }} onClick={() => setShowQuickCalorie(true)}>🍺 その他</button>
             <button className="btn-add" onClick={() => setShowFoodSelect(true)}>＋ 追加</button>
           </div>
         </div>
@@ -210,7 +209,7 @@ export default function HomeScreen() {
       )}
       {showQuickCalorie && (
         <QuickCalorieModal
-          onConfirm={(name, kcal) => { addQuickCalorie(name, kcal); setShowQuickCalorie(false); }}
+          onConfirm={(name, kcal, protein, fat, carb) => { addQuickCalorie(name, kcal, protein, fat, carb); setShowQuickCalorie(false); }}
           onCancel={() => setShowQuickCalorie(false)}
         />
       )}
